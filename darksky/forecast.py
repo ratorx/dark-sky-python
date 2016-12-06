@@ -6,7 +6,7 @@
 
 import requests
 
-import containers
+import containers as c
 from exceptions import InvalidParameterError
 
 
@@ -215,28 +215,28 @@ class Forecast:
         """
         Returns the Currently object for this forecast
         """
-        return containers.Currently(self)
+        return c.Currently(self)
 
     @property
     def minutely(self):
         """
         Returns the Minutely object for this forecast
         """
-        return containers.Minutely(self)
+        return c.Minutely(self)
 
     @property
     def hourly(self):
         """
         Returns the Hourly object for this forecast
         """
-        return containers.Hourly(self)
+        return c.Hourly(self)
 
     @property
     def daily(self):
         """
         Returns the Daily object for this forecast
         """
-        return containers.Daily(self)
+        return c.Daily(self)
 
     @property
     def alerts(self):
