@@ -6,6 +6,7 @@
 
 import requests
 
+import containers
 from exceptions import InvalidParameterError
 
 
@@ -172,11 +173,15 @@ class Forecast:
             raise InvalidParameterError(str(units)+" are not supported units.")
 
     @property
+    def data(self):
+        return self._data
+
+    @property
     def timezone(self):
         """
         Get timezone from json object
         """
-        return self._data.get("timezone")
+        return self.data.get("timezone")
 
     def get_url(self):
         """
@@ -210,28 +215,28 @@ class Forecast:
         """
         Returns the Currently object for this forecast
         """
-        pass
+        return containers.Currently(self)
 
     @property
     def minutely(self):
         """
         Returns the Minutely object for this forecast
         """
-        pass
+        return containers.Minutely(self)
 
     @property
     def hourly(self):
         """
         Returns the Hourly object for this forecast
         """
-        pass
+        return containers.Hourly(self)
 
     @property
     def daily(self):
         """
         Returns the Daily object for this forecast
         """
-        pass
+        return containers.Daily(self)
 
     @property
     def alerts(self):
