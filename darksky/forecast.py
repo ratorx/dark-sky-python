@@ -65,7 +65,9 @@ class Forecast:
     _units = None # Default is auto
     ALLOWED_UNITS = frozenset(["auto", "ca", "uk2", "us", "si"])
 
-    # Dictionary Object from request
+    # request object from api
+    _request = None # Provided to troubleshoot api issues
+    # dictionary object from request
     _data = None
 
     def __init__(self, key, lat, lng, exclude=None, extend=None, lang=None, \
@@ -80,7 +82,8 @@ class Forecast:
         self.units = units
 
         # Get Data JSON object
-        self._data = self.get_json()
+        self._request = self.get_request()
+        self._data = self.request.json()
 
     def __contains__(self, name):
         """
@@ -177,38 +180,15 @@ class Forecast:
         return self._data
 
     @property
+    def request(self):
+        return self._request
+
+    @property
     def timezone(self):
         """
         Get timezone from json object
         """
         return self.data.get("timezone")
-
-    def get_url(self):
-        """
-        Builds the request URL from state of Forecast instance
-        """
-        url = "https://api.darksky.net/forecast/{}/{},{}?lang={}&units={}"\
-                .format(str(self.key),
-                        str(self.lat),
-                        str(self.lng),
-                        self.lang,
-                        self.units)
-        addons = ""
-        if self.exclude is not None:
-            addons += "&exclude=" + ",".join(self.exclude)
-        if self.extend is not None:
-            addons += "&extend=" + ",".join(self.extend)
-
-        return url + addons
-
-    def get_json(self):
-        """
-        Returns the JSON forcecast (Uses 1 API call)
-        """
-        url = self.get_url()
-        r = requests.get(url)
-        r.raise_for_status()
-        return r.json()
 
     @property
     def currently(self):
@@ -251,3 +231,31 @@ class Forecast:
         Returns the Flags object for this forecast
         """
         pass
+
+    def get_url(self):
+        """
+        Builds the request URL from state of Forecast instance
+        """
+        url = "https://api.darksky.net/forecast/{}/{},{}?lang={}&units={}"\
+                .format(str(self.key),
+                        str(self.lat),
+                        str(self.lng),
+                        self.lang,
+                        self.units)
+        addons = ""
+        if self.exclude is not None:
+            addons += "&exclude=" + ",".join(self.exclude)
+        if self.extend is not None:
+            addons += "&extend=" + ",".join(self.extend)
+
+        return url + addons
+
+    def get_request(self):
+        """
+        Returns the JSON forcecast request as a Request object (Uses 1
+        API call)
+        """
+        url = self.get_url()
+        r = requests.get(url)
+        r.raise_for_status()
+        return r
