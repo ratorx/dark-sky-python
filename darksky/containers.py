@@ -68,7 +68,7 @@ class Daily(Datablock):
     """
     def __init__(self, forecast):
         if not isinstance(forecast, f.Forecast):
-            raise TypeError("Not a Forecast object")
+            raise TypeError("Not a Forecast object.")
         elif "daily" not in forecast:
             raise NoDataError("Daily datablock does not exist.")
 
@@ -78,16 +78,40 @@ class Daily(Datablock):
         return "<Daily data block with start time {} and {} datapoints>"\
                  .format(str(self.starttime), len(self))
 
-class Alerts:
+class Alerts(Datapoint):
     """
     An object to encapsulate the Alerts object.
     Uses a Forecast object to instantiate itself.
-    """
-    pass
 
-class Flags:
+    Refer to https://darksky.net/dev/docs/response for documentation
+
+    """
+
+    def __init__(self, forecast):
+        if not isinstance(forecast, f.Forecast):
+            raise TypeError("Not a Forecast object.")
+        elif "alerts" not in forecast:
+            raise NoDataError("Alerts Array does not exist.")
+
+        super().__init__(forecast.data.get("alerts"))
+
+    def __repr__(self):
+        return "<Alerts object for {}>".format(self.title)
+
+
+
+class Flags(Datapoint):
     """
     An object to encapsulate the Flags object.
     Uses a Forecast object to instantiate itself.
+
+    Refer to https://darksky.net/dev/docs/response for documentation
     """
-    pass
+
+    def __init__(self, forecast):
+        if not isinstance(forecast, f.Forecast):
+            raise TypeError("Not a Forecast object.")
+        elif "flags" not in forecast:
+            raise NoDataError("Flags object does not exist.")
+
+        super().__init__(forecast.data.get("flags"))

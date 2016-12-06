@@ -5,7 +5,7 @@ from exceptions import NoDataError
 
 class Datapoint:
     """
-    Wraps a datapoint dictionary into a usable pythonic datapoint
+    Wraps a datapoint dictionary into an object
 
     Guaranteed to contain:
     time - A UNIX time at which the datapoint begins (int)
@@ -37,9 +37,15 @@ class Datapoint:
         return "<Data point with time {} and {} attributes>"\
                  .format(str(self.time), len(self.attributes))
 
+    def __iter__(self):
+        return iter(self.__dict__)
+
     @property
     def attributes(self):
         return set(self.__dict__.keys())
+
+    def items(self):
+        return self.__dict__.items()
 
 
 class Datablock:
