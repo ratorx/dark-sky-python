@@ -18,16 +18,8 @@ class Datapoint:
 
     """
 
-    # Required
-    _time = None
-
     def __init__(self, datapoint):
         if not isinstance(datapoint, dict):
-            raise NoDataError("Not a valid data source.")
-
-        try:
-            self._time = int(datapoint["time"])
-        except (KeyError, TypeError):
             raise NoDataError("Not a valid data source.")
 
         self.__dict__ = datapoint
@@ -41,9 +33,9 @@ class Datapoint:
     def __contains__(self, name):
         return name in self.__dict__.keys()
 
-    @property
-    def time(self):
-        return self._time
+    def __repr__(self):
+        return "<Data point with time {} and {} attributes>"\
+                 .format(str(self.time), len(self.attributes))
 
     @property
     def attributes(self):
@@ -85,6 +77,9 @@ class Datablock:
         self._summary = datablock.get("summary", "No summary found.")
         self._icon = datablock.get("icon", "none")
 
+    def __len__(self):
+        return len(self._datapoints)
+
     def __iter__(self):
         return iter(self._datapoints)
 
@@ -104,7 +99,7 @@ class Datablock:
         elif not isinstance(time, int):
             raise TypeError("time must be an int or struct_time object.")
 
-        index = self.index()
+        index = self.index(time)
         if index < 0 or index >= len(self._datapoints):
             return self._datapoints[index]
 
@@ -150,4 +145,4 @@ class Datablock:
         Arguments:
         time - int representing seconds since the epoch
         """
-        return int((time - self.starttime) / self.interval)
+        return int((time - self.starttime) / self._interval)

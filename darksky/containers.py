@@ -22,7 +22,9 @@ class Currently(Datapoint):
 
         super().__init__(forecast.data.get("currently"))
 
-    # TODO: Define __repr__ and __str__
+    def __repr__(self):
+        return "<Currently data point at time {} with {} attributes>"\
+                 .format(str(self.time), len(self.attributes))
 
 
 class Minutely(Datablock):
@@ -38,7 +40,9 @@ class Minutely(Datablock):
 
         super().__init__(forecast.data.get("minutely"))
 
-    # TODO: Define __repr__ and __str__
+    def __repr__(self):
+        return "<Minutely data block with start time {} and {} datapoints>"\
+                 .format(str(self.starttime), len(self))
 
 class Hourly(Datablock):
     """
@@ -53,7 +57,9 @@ class Hourly(Datablock):
 
         super().__init__(forecast.data.get("hourly"))
 
-    # TODO: Define __repr__ and __str__
+    def __repr__(self):
+        return "<Hourly data block with start time {} and {} datapoints>"\
+                 .format(str(self.starttime), len(self))
 
 class Daily(Datablock):
     """
@@ -68,7 +74,9 @@ class Daily(Datablock):
 
         super().__init__(forecast.data.get("daily"))
 
-    # TODO: Define __repr__ and __str__
+    def __repr__(self):
+        return "<Daily data block with start time {} and {} datapoints>"\
+                 .format(str(self.starttime), len(self))
 
 class Alerts:
     """
