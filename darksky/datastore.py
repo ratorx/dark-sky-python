@@ -5,10 +5,10 @@ from exceptions import NoDataError
 
 class Datapoint:
     """
-    Converts a datapoint dictionary into a usable datapoint
+    Wraps a datapoint dictionary into a usable pythonic datapoint
 
     Guaranteed to contain:
-    time - A UNIX time at which the datapoint begins
+    time - A UNIX time at which the datapoint begins (int)
 
     Other fields are not guaranteed to exist. Will throw
     AttributeError if field is not found
@@ -38,6 +38,9 @@ class Datapoint:
         except KeyError:
             raise AttributeError(name + "does not exist.")
 
+    def __contains__(self, name):
+        return name in self.__dict__.keys()
+
     @property
     def time(self):
         return self._time
@@ -51,13 +54,15 @@ class Datablock:
     """
     Converts a datablock dictionary into usable data blocks.
 
-    datapoints - A dictionary of Datapoint objects hashed by time
-    summary - A human-readable summary of this datablock
-    icon - A machine-readable summary of this datablock
+    datapoints - A dictionary of Datapoint objects hashed by time (dict)
+    summary - A human-readable summary of this datablock (string)
+    icon - A machine-readable summary of this datablock (string)
     """
 
     # Required
     _datapoints = None
+    _starttime = None
+    _interval = None
 
     # Optional
     _summary = None
@@ -68,10 +73,12 @@ class Datablock:
         if not isinstance(datablock, dict):
             raise NoDataError("Not a valid data source.")
 
-        self._datapoints = dict()
+        self._datapoints = []
+        self._starttime = datablock["data"][0]["time"]
+        self._interval = datablock["data"][1]["time"] - self.starttime
         try:
             for datapoint in datablock["data"]:
-                self._datapoints[datapoint["time"]] = Datapoint(datapoint)
+                self._datapoints.append(Datapoint(datapoint))
         except KeyError:
             raise NoDataError("Not a valid data source.")
 
@@ -79,23 +86,13 @@ class Datablock:
         self._icon = datablock.get("icon", "none")
 
     def __iter__(self):
-        return iter(self.datapoints)
+        return iter(self._datapoints)
 
-    @property
-    def datapoints(self):
-        return self._datapoints
-
-    @property
-    def summary(self):
-        return self._summary
-
-    @property
-    def icon(self):
-        return self._icon
-
-    def get_datapoint(self, time):
+    def __getitem__(self, time):
         """
-        Returns the datapoint at a given time
+        Returns the datapoint at a given time. If time is in range of
+        the datablock, it will be rounded down to the nearest
+        available datapoint.
 
         Arguments:
         time - A struct_time object or an int time measure in seconds
@@ -107,7 +104,50 @@ class Datablock:
         elif not isinstance(time, int):
             raise TypeError("time must be an int or struct_time object.")
 
-        try:
-            return self.datapoints[time]
-        except KeyError:
-            raise NoDataError("The data for the given time is not available.")
+        index = self.index()
+        if index < 0 or index >= len(self._datapoints):
+            return self._datapoints[index]
+
+    def __contains__(self, time):
+        """
+        Returns a boolean value which determines if a given time has a
+        datapoint. If time is in range of the datablock, it will be
+        rounded down to the nearest available datapoint
+
+        Arguments:
+        time - A struct_time object or an int time measure in seconds
+               since the epoch.
+        """
+
+        if isinstance(time, struct_time):
+            time = mktime(time)
+        elif not isinstance(time, int):
+            raise TypeError("time must be an int or struct_time object.")
+
+        return time >= self.starttime and time <= self.endtime
+
+    @property
+    def summary(self):
+        return self._summary
+
+    @property
+    def icon(self):
+        return self._icon
+
+    @property
+    def starttime(self):
+        return self._starttime
+
+    @property
+    def endtime(self):
+        return self._starttime + self._interval * len(self._datapoints)
+
+    def index(self, time):
+        """
+        Returns the list index of the weather datapoint with time
+        rounded down to the nearest datapoint time.
+
+        Arguments:
+        time - int representing seconds since the epoch
+        """
+        return int((time - self.starttime) / self.interval)
