@@ -1,14 +1,19 @@
 # Dark Sky Python
 
-Python 3 wrapper for the Dark Sky Weather API. The aim is to provide a lightweight library which can be used easily in future projects.
+Python 3 wrapper for the Dark Sky Weather API. This should provide a lightweight library which is feature-complete with the API.
+
+## Simple Usage
+...
+
+## Documentation
+...
 
 [Powered by Dark Sky](https://darksky.net/poweredby/)
 
 ## TODO
-* Implement Alerts and Flags
-* Implement __str__ and __repr__ for all containers
-* Improve consistency of documentation
 * Write unit tests
 * Improve README
 * Make into proper package (implement __init__.py)
 * Add requirements.txt
+* Implement dedicated classes for Alerts and Flags
+* Parse headers to provide easy access to more useful information (current way involves manually parsing the header)
