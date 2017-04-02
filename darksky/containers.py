@@ -6,13 +6,9 @@ from datastore import Datapoint, Datablock
 from exceptions import NoDataError
 import forecast as f
 
-# TODO: Consider being able to call all the weather objects without having
-# to manually create a forecast object first.
-
 class Currently(Datapoint):
     """
-    An object to encapsulate the Currently data point.
-    Uses a f.Forecast object to instantiate itself.
+    Represents the Currently Datapoint in the Forecast response.
     """
     def __init__(self, forecast):
         if not isinstance(forecast, f.Forecast):
@@ -23,14 +19,13 @@ class Currently(Datapoint):
         super().__init__(forecast.data.get("currently"))
 
     def __repr__(self):
-        return "<Currently data point at time {} with {} attributes>"\
+        return "<Currently data point at time {} with {} attributes>" \
                  .format(str(self.time), len(self.attributes))
 
 
 class Minutely(Datablock):
     """
-    An object to encapsulate the Minutely data block.
-    Uses a f.Forecast object to instantiate itself.
+    Represents the Minutely Datablock in the Forecast response.
     """
     def __init__(self, forecast):
         if not isinstance(forecast, f.Forecast):
@@ -41,13 +36,12 @@ class Minutely(Datablock):
         super().__init__(forecast.data.get("minutely"))
 
     def __repr__(self):
-        return "<Minutely data block with start time {} and {} datapoints>"\
+        return "<Minutely data block with start time {} and {} datapoints>" \
                  .format(str(self.starttime), len(self))
 
 class Hourly(Datablock):
     """
-    An object to encapsulate the Hourly data block.
-    Uses a f.Forecast object to instantiate itself.
+    Represents the Hourly Datablock in the Forecast response.
     """
     def __init__(self, forecast):
         if not isinstance(forecast, f.Forecast):
@@ -58,13 +52,12 @@ class Hourly(Datablock):
         super().__init__(forecast.data.get("hourly"))
 
     def __repr__(self):
-        return "<Hourly data block with start time {} and {} datapoints>"\
+        return "<Hourly data block with start time {} and {} datapoints>" \
                  .format(str(self.starttime), len(self))
 
 class Daily(Datablock):
     """
-    An object to encapsulate the Daily data block.
-    Uses a f.Forecast object to instantiate itself.
+    Represents the Daily Datablock in the Forecast response.
     """
     def __init__(self, forecast):
         if not isinstance(forecast, f.Forecast):
@@ -75,16 +68,15 @@ class Daily(Datablock):
         super().__init__(forecast.data.get("daily"))
 
     def __repr__(self):
-        return "<Daily data block with start time {} and {} datapoints>"\
+        return "<Daily data block with start time {} and {} datapoints>" \
                  .format(str(self.starttime), len(self))
 
 class Alerts(Datapoint):
     """
-    An object to encapsulate the Alerts object.
-    Uses a Forecast object to instantiate itself.
+    Represents the Alerts object from the Forecast response.
 
-    Refer to https://darksky.net/dev/docs/response for documentation
-
+    Refer to https://darksky.net/dev/docs/response under Alerts for
+    documentation.
     """
 
     def __init__(self, forecast):
@@ -102,10 +94,10 @@ class Alerts(Datapoint):
 
 class Flags(Datapoint):
     """
-    An object to encapsulate the Flags object.
-    Uses a Forecast object to instantiate itself.
+    Represents the Flags object from the Forecast response.
 
-    Refer to https://darksky.net/dev/docs/response for documentation
+    Refer to https://darksky.net/dev/docs/response under Flags for
+    documentation.
     """
 
     def __init__(self, forecast):

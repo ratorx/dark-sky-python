@@ -12,35 +12,35 @@ from exceptions import InvalidParameterError
 
 class Forecast:
     """
-    This handles the API calls and url-building required to fetch a
-    weather forcast. The resulting object can be passed into any of datablocks
-    or datapoints in order to instantiate it.
-    Arguments:
+    A class to handle the URL generation for the API call and request
+    parsing of the API object.
 
-    Required
-    key - API key of user (String)
+    Required arguments:
+    key - API key of user (string)
     lat - Latitude of forecast location (float)
     lng - Longitude of forecast location (float)
 
-    Optional
-    exclude - List of data blocks/points to exclude from forecast request
+    Optional arguments:
+    exclude - Containers to exclude from forecast request (list)
     ALLOWED: "currently", "minutely", "hourly", "daily", "alerts", "flags"
     DEFAULT: None
 
-    extend - List of data blocks/points to provide extended information for
+    extend - Containers to provide extended information for (list)
     ALLOWED: "hourly"
     DEFAULT: None
 
-    lang - Language of summaries
-    ALLOWED: Visit https://darksky.net/dev/docs/forecast for allowed languages
+    lang - Language of summaries (string)
+    ALLOWED: Visit https://darksky.net/dev/docs/forecast for allowed
+             languages
     DEFAULT: "en"
 
-    units - Units of weather data
+    units - Units of weather data (string)
     ALLOWED: "auto", "ca", "uk2", "us", "si"
     DEFAULT: "auto"
 
     Data:
-    data - Dictionary containing the returned forcast request
+    request - Request object from the API response (Request)
+    data - Dictionary containing the returned forcast request (dict)
     """
 
     # Required Variables
@@ -65,9 +65,7 @@ class Forecast:
     _units = None # Default is auto
     ALLOWED_UNITS = frozenset(["auto", "ca", "uk2", "us", "si"])
 
-    # request object from api
     _request = None # Provided to troubleshoot api issues
-    # dictionary object from request
     _data = None
 
     def __init__(self, key, lat, lng, exclude=None, extend=None, lang=None, \
@@ -87,10 +85,13 @@ class Forecast:
 
     def __contains__(self, name):
         """
-        Used to check if forecast object contains the given data object.
-        This should not be used to see if the json object contains an
-        attribute. Only should be used to check if a particular data
-        point or block is present.
+        Returns a boolean value which represents whether the returned
+        object contains the named container
+
+        Arguments:
+        name - The name of the container to check for
+        ALLOWED: "currently", "minutely", "hourly", "daily", "alerts",
+                 "flags"
         """
         if name not in self.ALLOWED_EXCLUDES or name not in self.data.keys():
             return False
@@ -186,55 +187,55 @@ class Forecast:
     @property
     def timezone(self):
         """
-        Get timezone from json object
+        Get timezone from JSON object.
         """
         return self.data.get("timezone")
 
     @property
     def currently(self):
         """
-        Returns the Currently object for this forecast
+        Returns the Currently object for this forecast.
         """
         return c.Currently(self)
 
     @property
     def minutely(self):
         """
-        Returns the Minutely object for this forecast
+        Returns the Minutely object for this forecast.
         """
         return c.Minutely(self)
 
     @property
     def hourly(self):
         """
-        Returns the Hourly object for this forecast
+        Returns the Hourly object for this forecast.
         """
         return c.Hourly(self)
 
     @property
     def daily(self):
         """
-        Returns the Daily object for this forecast
+        Returns the Daily object for this forecast.
         """
         return c.Daily(self)
 
     @property
     def alerts(self):
         """
-        Returns the Alerts object for this forecast
+        Returns the Alerts object for this forecast.
         """
-        pass
+        return c.Alerts(self)
 
     @property
     def flags(self):
         """
-        Returns the Flags object for this forecast
+        Returns the Flags object for this forecast.
         """
-        pass
+        return c.Flags(self)
 
     def get_url(self):
         """
-        Builds the request URL from state of Forecast instance
+        Generates the URL from the instance.
         """
         url = "https://api.darksky.net/forecast/{}/{},{}?lang={}&units={}"\
                 .format(str(self.key),
@@ -252,8 +253,7 @@ class Forecast:
 
     def get_request(self):
         """
-        Returns the JSON forcecast request as a Request object (Uses 1
-        API call)
+        Returns the JSON forcecast request as a Request object.
         """
         url = self.get_url()
         r = requests.get(url)

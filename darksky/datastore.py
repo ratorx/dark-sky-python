@@ -5,17 +5,16 @@ from exceptions import NoDataError
 
 class Datapoint:
     """
-    Wraps a datapoint dictionary into an object
+    A generic class to wrap each datapoint in the API response.
 
-    Guaranteed to contain:
+    Guaranteed Attribute:
     time - A UNIX time at which the datapoint begins (int)
 
     Other fields are not guaranteed to exist. Will throw
     AttributeError if field is not found
 
     Refer to https://darksky.net/dev/docs/response
-    under the Data Point Object.
-
+    under Data Point Object for list of possible attributes.
     """
 
     def __init__(self, datapoint):
@@ -25,22 +24,18 @@ class Datapoint:
         self.__dict__ = datapoint
 
     def __getattr__(self, name): # Necessary to avoid pylint errors
-        try:
-            return self.__dict__[name]
-        except KeyError:
-            raise AttributeError(name + "does not exist.")
+        return self.__dict__.get(name)
 
     def __contains__(self, name):
         return name in self.__dict__.keys()
 
     def __repr__(self):
-        return "<Data point with time {} and {} attributes>"\
+        return "<Data point at time {} with {} attributes>" \
                  .format(str(self.time), len(self.attributes))
 
     def __iter__(self):
         return iter(self.__dict__)
 
-    @property
     def attributes(self):
         return set(self.__dict__.keys())
 
@@ -50,11 +45,15 @@ class Datapoint:
 
 class Datablock:
     """
-    Converts a datablock dictionary into usable data blocks.
+    A class to wrap Datablocks from the API response
 
+    Attributes:
     datapoints - A dictionary of Datapoint objects hashed by time (dict)
     summary - A human-readable summary of this datablock (string)
     icon - A machine-readable summary of this datablock (string)
+    starttime - The UNIX time that the first Datapoint was recorded (int)
+    endtime - The UNIX time that the last Datapoint ends (int)
+
     """
 
     # Required
@@ -84,9 +83,15 @@ class Datablock:
         self._icon = datablock.get("icon", "none")
 
     def __len__(self):
+        """
+        Returns the number of Datapoints in the Datablock.
+        """
         return len(self._datapoints)
 
     def __iter__(self):
+        """
+        Returns an iterable over the Datapoints in the Datablock.
+        """
         return iter(self._datapoints)
 
     def __getitem__(self, time):
@@ -96,8 +101,7 @@ class Datablock:
         available datapoint.
 
         Arguments:
-        time - A struct_time object or an int time measure in seconds
-               since the epoch.
+        time - Query time (struct_time OR int)
         """
 
         if isinstance(time, struct_time):
@@ -111,13 +115,11 @@ class Datablock:
 
     def __contains__(self, time):
         """
-        Returns a boolean value which determines if a given time has a
-        datapoint. If time is in range of the datablock, it will be
-        rounded down to the nearest available datapoint
+        Returns a boolean value which represents whether a given time is
+        in range of the Datablock.
 
         Arguments:
-        time - A struct_time object or an int time measure in seconds
-               since the epoch.
+        time - Query time (struct_time OR int)
         """
 
         if isinstance(time, struct_time):
@@ -149,6 +151,6 @@ class Datablock:
         rounded down to the nearest datapoint time.
 
         Arguments:
-        time - int representing seconds since the epoch
+        time - Query time (int)
         """
         return int((time - self.starttime) / self._interval)
