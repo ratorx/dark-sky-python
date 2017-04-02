@@ -26,11 +26,10 @@ print(current.summary)
 Eg. to get the forecast in 1 hour:
 ```python
 hourly = f.hourly
-print(hourly[hourly.starttime + 3600].summary)
+print(hourly[1].summary)
 ```
 
 ## TODO
-* Improve fetching datapoints from minutely and hourly datablocks
 * Write unit tests
 * Improve README
 * Make into proper package (implement __init__.py)

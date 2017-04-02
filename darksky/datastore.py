@@ -94,22 +94,17 @@ class Datablock:
         """
         return iter(self._datapoints)
 
-    def __getitem__(self, time):
+    def __getitem__(self, n):
         """
         Returns the datapoint at a given time. If time is in range of
         the datablock, it will be rounded down to the nearest
         available datapoint.
 
         Arguments:
-        time - Query time (struct_time OR int)
+        n - Number of intervals from the starttime
         """
 
-        if isinstance(time, struct_time):
-            time = mktime(time)
-        elif not isinstance(time, int):
-            raise TypeError("time must be an int or struct_time object.")
-
-        index = self.index(time)
+        index = self.index(self.starttime + n * self.interval)
         if index < 0 or index >= len(self._datapoints):
             return self._datapoints[index]
 
@@ -117,6 +112,11 @@ class Datablock:
         """
         Returns a boolean value which represents whether a given time is
         in range of the Datablock.
+
+        Note: Reason that __getitem__ and __contains__ take different
+        arguments is because each simplifies use in its own way. To check
+        if a given n is in the block is simple, whereas its more useful
+        to check if a given time is in range.
 
         Arguments:
         time - Query time (struct_time OR int)
@@ -140,6 +140,10 @@ class Datablock:
     @property
     def starttime(self):
         return self._starttime
+
+    @property
+    def interval(self):
+        return self._interval
 
     @property
     def endtime(self):
