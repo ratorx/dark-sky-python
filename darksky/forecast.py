@@ -6,8 +6,8 @@
 
 import requests
 
-import containers as c
-from exceptions import InvalidParameterError
+from . import containers as c
+from .exceptions import InvalidParameterError
 
 
 class Forecast:

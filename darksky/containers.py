@@ -2,9 +2,9 @@
 
 # pylint: disable=C0411; Pylint bug trying to order imports incorrectly
 
-from datastore import Datapoint, Datablock
-from exceptions import NoDataError
-import forecast as f
+from .datastore import Datapoint, Datablock
+from .exceptions import NoDataError
+from . import forecast as f
 
 class Currently(Datapoint):
     """

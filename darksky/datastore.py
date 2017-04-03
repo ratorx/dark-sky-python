@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 from time import struct_time, mktime
 
-from exceptions import NoDataError
+from .exceptions import NoDataError
 
 class Datapoint:
     """
