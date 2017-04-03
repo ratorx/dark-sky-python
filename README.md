@@ -31,6 +31,5 @@ print(hourly[1].summary)
 
 ## TODO
 * Improve README - In progress
-* Add requirements.txt
 * Implement dedicated classes for Alerts and Flags
 * Parse headers to provide easy access to more useful information (current way involves manually parsing the header)
